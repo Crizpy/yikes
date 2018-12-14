@@ -1,15 +1,16 @@
 <template>
   <div id="app">
-    <img class="logo" src="./assets/conrad_logo_regular.svg">
     <router-view/>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
 }
 </script>
+
+
 
 <style>
 #app {
@@ -19,10 +20,5 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
-}
-
-.logo {
-  width: 35%;
-  height: 20%;
 }
 </style>

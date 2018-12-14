@@ -9,9 +9,10 @@
       <td>Artnr</td>
       <td>{{ searchPositionObject.title }}</td>
       <td>{{ searchPositionObject.fileName }}</td>
-      <td>{{ searchPositionObject.language }}</td>
+      <td><img :src="getLanguageIcon()"></td>
       <td>{{ searchPositionObject.fileType }}</td>
       <td>{{ (searchPositionObject.fileSize / 1000 / 1000).toFixed(3) }} MB</td>
+      <a :href="searchPositionObject.links[0].location" target="_blank">Klick hier</a>
     </tr>
 
 <!--
@@ -21,6 +22,8 @@
 
 <script>
 
+  var images = require.context('../assets/icons/languages/', false, /\.png$/)
+
   export default {
     name: 'SearchPosition',
     props: {
@@ -29,6 +32,14 @@
         required: true
       },
     },
+    methods: {
+      getLanguageIcon() {
+        switch (this.searchPositionObject.language) {
+          case "en" :
+            return images("./gb.png")
+        }
+      }
+    }
   };
 </script>
 

@@ -1,5 +1,9 @@
 <template>
   <div>
+    <img class="logo" @click="response = []" src="../assets/conrad_logo_regular.svg">
+    <button @click="setLang('de')" >de</button>
+    <button @click="setLang('en')" >en</button>
+    {{ $t('hello') }}
     <div class="filterContainer">
       <select v-model="input.languageFilter">
         <option selected="selected" value="">Sprachen</option>
@@ -47,6 +51,7 @@
         <span>Im Conrad-Downloadcenter können Sie verschiedene interessante Informationen rund um die Conrad-Produktfamilie herunterladen.</span><br><br>
         <span>Es stehen bereits über 980.000 Datenblätter, Bedienungsanleitungen, Schaltpläne und Produktinformationen für Sie zur Verfügung.</span>
       </div>
+      {{ $t('hello') }}
     </div>
     <table v-if="response.length != 0">
       <tr>
@@ -100,6 +105,10 @@
         }, error => {
           console.error(error);
         });
+      },
+      setLang: function (lang) {
+        localStorage.setItem("i18n",lang)
+        this.$i18n.locale = lang
       }
     }
   }
@@ -158,5 +167,11 @@ a {
     height: 145%;
     width: 5%;
     border: none;
+  }
+
+  .logo {
+    width: 35%;
+    height: 20%;
+    cursor: pointer;
   }
 </style>

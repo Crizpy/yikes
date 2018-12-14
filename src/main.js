@@ -4,6 +4,18 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import axios from "axios"
+import VueI18n from "vue-i18n"
+
+import languageKeys from "./assets/languageKeys/languageKeys"
+
+Vue.use(VueI18n)
+
+const i18n = new VueI18n({
+  locale: localStorage.getItem("i18n"),
+  fallbackLocale: 'en',
+  messages: languageKeys
+})
+
 
 Vue.config.productionTip = false
 Vue.prototype.$accessToken = "";
@@ -45,12 +57,14 @@ function generateAccessToken(callback) {
   });
 }
 
-generateAccessToken();
+generateAccessToken(function () {
+});
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  i18n,
   components: { App },
   template: '<App/>'
 })
