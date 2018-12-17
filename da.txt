@@ -1,0 +1,14 @@
+Restliche TODOS:
+
+Language Key Mapping fertig machen
+Language Key Selector Design mit Icons erstellen
+Language Key Selector + Language Filter Content an Sprachen anpassen
+Design Responsive machen
+Artikel Nummer im Response Tabelle finden und einpflegen
+Response Box Language Icon Mapping fertigstellen
+
+Others : 
+
+Berichtsheft Schreiben
+Projektdokumentation Erstellen
+Präsentation Erstellen
