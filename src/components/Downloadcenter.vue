@@ -1,12 +1,27 @@
 <template>
   <div>
-    <img class="logo" @click="response = []" src="../assets/conrad_logo_regular.svg">
-    <button @click="setLang('de')" >de</button>
-    <button @click="setLang('en')" >en</button>
-    {{ $t('hello') }}
-    <div class="filterContainer">
-      <select v-model="input.languageFilter">
-        <option selected="selected" value="">Sprachen</option>
+
+    <select class="languageSetter" @change="setLang()" v-model="selectLanguage">
+      <option value="de">Deutsch</option>
+      <option value="en">English</option>
+      <option value="nl">Netherlands</option>
+      <option value="fr">France</option>
+      <option value="se">Schweden</option>
+      <option value="svk">Slowakei</option>
+      <option value="svn">Slowenien</option>
+      <option value="cs">Czechien</option>
+      <option value="es">Spanien</option>
+      <option value="it">Italien</option>
+      <option value="pl">Polen</option>
+      <option value="ru">Russland</option>
+    </select>
+
+    <img class="logo" @click="response = []; wrongQuery = false;" src="../assets/conrad_logo_regular.svg">
+
+    <div class="searchContainer">
+
+      <select  class="languageFilter" v-model="input.languageFilter">
+        <option value="">Sprache</option>
         <option value="de">Deutsch</option>
         <option value="en">Englisch</option>
         <option value="cs">Tschechisch</option>
@@ -20,25 +35,17 @@
         <option value="sk">Slowenisch</option>
         <option value="sv">Schwedisch</option>
       </select>
-      <span>{{input.languageFilter}}</span>
-      <select v-model="input.categoryFilter">
-        <option selected="selected" value="">Alle Dokumente</option>
-        <option value="da">Datenblätter</option>
-        <option value="sp">Schaltpläne</option>
-        <option value="in">Informationen</option>
-        <option value="an">Anleitungen</option>
-        <option value="si">Sicherheitsdatenblätter</option>
-        <option value="cr">Zertifikate</option>
-        <option value="up">Software</option>
-        <option value="el">Ersatzteillisten</option>
-      </select>
-      <span>{{input.categoryFilter}}</span>
-    </div>
-    <div class="searchContainer">
-      <input type="text" class="searchBar" v-model="input.searchQuery" placeholder="Suchbegriff eingeben" />
+
+      <input type="text" class="searchBar" v-model="input.searchQuery" @keyup.enter="sendData()" placeholder="Suchbegriff eingeben" />
       <button class="searchBarButton" v-on:click="sendData()">Suchen</button>
+
     </div>
-    <div v-if="response.length == 0">
+
+    <div v-if="wrongQuery">
+      Sorry, your search returned no results
+    </div>
+
+    <div v-if="response.length == 0 && !wrongQuery">
       <img class="icon" src="../assets/icons/an.svg">
       <img class="icon" src="../assets/icons/ce.svg">
       <img class="icon" src="../assets/icons/da.svg">
@@ -49,24 +56,42 @@
       <img class="icon" src="../assets/icons/up.svg">
       <div class="infoText">
         <span>Im Conrad-Downloadcenter können Sie verschiedene interessante Informationen rund um die Conrad-Produktfamilie herunterladen.</span><br><br>
-        <span>Es stehen bereits über 980.000 Datenblätter, Bedienungsanleitungen, Schaltpläne und Produktinformationen für Sie zur Verfügung.</span>
+        <span>Es stehen bereits über 980.000 Dokumente für Sie zur Verfügung.</span>
+        <span>
+          <br><br> Darunter finden Sie : <br><br>
+          Datenblätter <br>
+          Schaltpläne <br>
+          Informationen <br>
+          Anleitungen <br>
+          Sicherheitsdatenblätter <br>
+          Zertifikate <br>
+          Ersatzteillisten <br>
+          Software <br>
+
+        </span>
       </div>
-      {{ $t('hello') }}
     </div>
-    <table v-if="response.length != 0">
-      <tr>
-        <th>Artnr</th>
-        <th>Titel</th>
-        <th>Dateiname</th>
-        <th>Sprachen</th>
-        <th>Typ</th>
-        <th>Größe</th>
-      </tr>
-      <tbody v-for="position in response" >
-        <SearchPosition
-          :searchPositionObject="position"/>
-      </tbody>
-    </table>
+
+    <div class="resultBox" v-if="response.length != 0">
+      <table id="resultTable" class="resultTable">
+        <tr>
+          <th class="firstRow">Artnr</th>
+          <th>Dateibezeichnung</th>
+          <th>Sprachen</th>
+          <th>Typ</th>
+          <th>Größe</th>
+        </tr>
+        <tbody v-for="position in response" >
+          <SearchPosition
+            :searchPositionObject="position"/>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="footer">
+      <a href="https://www.conrad.de" target="_blank">Zum Conrad Webshop</a>
+    </div>
+
   </div>
 </template>
 
@@ -80,41 +105,73 @@
       SearchPosition
     },
     data () {
+
       return {
+
         input: {
           searchQuery: "",
           languageFilter: "",
-          categoryFilter: ""
         },
-        response: []
+
+        response: [],
+        wrongQuery: false,
+        selectLanguage: "de"
+
       }
+
     },
     methods: {
       sendData() {
 
-        let authorizationToken = "Bearer "+this.$getAccessToken().access_token;
-        let search = encodeURI('&search={"title":"*'+this.input.searchQuery+'*","extension":"pdf","language":"'+this.input.languageFilter+'"}&search_hits=3&include_meta=true')
-        axios({ method: "GET", "url": "https://api-rs.mycliplister.com/v2.2/apis/asset/list?limit=30&order_by=title&order_method=desc"+search,"data": {}, "headers": { "Authorization": authorizationToken } }).then(result => {
-          console.log(result)
+        if(this.input.searchQuery == "") {
           this.response = [];
+          this.wrongQuery = true;
+          return;
+        }
+
+        let authorizationToken = "Bearer "+this.$getAccessToken().access_token;
+
+        let apiHost = "https://api-rs.mycliplister.com";
+        let api = "/v2.2/apis/asset/list"
+        let apiParas = "?limit=30&order_by=title&order_method=desc&include_meta=true"
+        let search = '&search={"title":"*'+this.input.searchQuery+'*","object_type":"document"';
+
+        let languageFilter = "}&search_hits=2";
+        if (this.input.languageFilter != "") {
+          languageFilter = ',"language": "'+this.input.languageFilter+'"}&search_hits=3';
+        }
+
+        let apiQuery = apiHost + api + apiParas + search + languageFilter;
+
+        axios({ method: "GET", "url": encodeURI(apiQuery),"data": {}, "headers": { "Authorization": authorizationToken } }).then(result => {
+
+          this.response = [];
+
           result.data.forEach((va) => {
             this.response.push(va)
           })
-          console.log("call doneso")
-          console.log(result.data)
+
+          console.log(this.response)
+          this.wrongQuery = false;
+
         }, error => {
-          console.error(error);
+
+          this.response = [];
+          this.wrongQuery = true;
+
         });
       },
-      setLang: function (lang) {
+      setLang: function () {
+
+        let lang = this.selectLanguage
         localStorage.setItem("i18n",lang)
         this.$i18n.locale = lang
+
       }
     }
   }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1, h2 {
   font-weight: normal;
@@ -131,21 +188,78 @@ a {
   color: #42b983;
 }
 
+
+
 .icon {
   width: 5%;
   height: 5%;
 }
 
+.resultTable {
+  border-collapse: collapse;
+  width: 100%;
+
+}
+
+.footer {
+  width: 100%;
+  background-color: #0098dd;
+  height: 30px;
+  position: absolute;
+  bottom: 0;
+  color: white;
+  text-align: center;
+  padding-top: 10px;
+  font-weight: bold;
+}
+
+.footer a {
+  text-decoration: none;
+  color: white;
+}
+
+.firstRow {
+  width: 430px;
+}
+
 .infoText {
-  width: 20%;
+  width: 30%;
   margin: auto;
-  margin-top: 5%;
+  margin-top: 3%;
+  font-size: 18px;
+  color: darkgray;
+}
+
+tbody:nth-child(even) {
+  background-color: #f4f4f4;
+}
+
+.languageSetter {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: none;
+  outline: none;
+  width: 6%;
+  height: 3%;
 }
 
   .searchContainer {
     height: 40px;
-    margin-top: 2.5%;
     margin-bottom: 2.5%;
+  }
+
+  .resultBox {
+    overflow-y: scroll;
+    height: 592px;
+  }
+
+  /*Just filter out this part here if you dont want sticky table headers*/
+  .resultBox th {
+    position: sticky;
+    top: 0;
+    background: white;
+    padding-bottom: 10px;
   }
 
   .searchBar {
@@ -159,19 +273,38 @@ a {
     border: 3px solid #0098dd;
     position: relative;
     margin-right: -.3%;
+    outline: none;
   }
 
   .searchBarButton {
     background: #0098dd;
     color: white;
     height: 145%;
-    width: 5%;
+    width: 8%;
     border: none;
+    outline: none;
+  }
+
+
+  .languageFilter {
+    outline: none;
+    height: 145%;
+    width: 8%;
+    padding: 6px 10px 6px 27px;
+    color: white;
+    background: #0098dd;
+    font-size: 13px;
+    line-height: 17px;
+    border: 3px solid #0098dd;
+    position: relative;
+    margin-right: -.3%;
   }
 
   .logo {
     width: 35%;
     height: 20%;
     cursor: pointer;
+    margin-top: .9%;
+    margin-bottom: 1.5%;
   }
 </style>

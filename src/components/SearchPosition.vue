@@ -1,23 +1,13 @@
 <template>
-<!--
-  <a :href="searchPositionObject.links[0].location" target="_blank">
--->
-<!--
-    <tr onclick="window.location=searchPositionObject.links[0].location;">
--->
-    <tr onclick="window.location">
-      <td>Artnr</td>
-      <td>{{ searchPositionObject.title }}</td>
-      <td>{{ searchPositionObject.fileName }}</td>
+
+    <tr class="resultRow" @click="openSite(searchPositionObject.links[0].location)">
+      <td>837168</td>
+      <td>{{ searchPositionObject.title }}<br><span class="fileName">[{{ searchPositionObject.fileName }}]</span></td>
       <td><img :src="getLanguageIcon()"></td>
       <td>{{ searchPositionObject.fileType }}</td>
       <td>{{ (searchPositionObject.fileSize / 1000 / 1000).toFixed(3) }} MB</td>
-      <a :href="searchPositionObject.links[0].location" target="_blank">Klick hier</a>
     </tr>
 
-<!--
-  </a>
--->
 </template>
 
 <script>
@@ -38,6 +28,9 @@
           case "en" :
             return images("./gb.png")
         }
+      },
+      openSite(link) {
+        window.open(link,"_blank")
       }
     }
   };
@@ -48,6 +41,21 @@
   a {
     width: 100%;
     height: 100%;
+  }
+
+  .resultRow {
+    height: 30px;
+    cursor: pointer;
+  }
+
+  .fileName {
+    font-size: 12px;
+    color: lightgrey;
+  }
+
+  td {
+    padding: 6px;
+    font-size: 14px;
   }
 
 </style>
