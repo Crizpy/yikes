@@ -2,47 +2,47 @@
   <div>
 
     <select class="languageSetter" @change="setLang()" v-model="selectLanguage">
-      <option value="de">Deutsch</option>
-      <option value="en">English</option>
-      <option value="nl">Netherlands</option>
-      <option value="fr">France</option>
-      <option value="se">Schweden</option>
-      <option value="svk">Slowakei</option>
-      <option value="svn">Slowenien</option>
-      <option value="cs">Czechien</option>
-      <option value="es">Spanien</option>
-      <option value="it">Italien</option>
-      <option value="pl">Polen</option>
-      <option value="ru">Russland</option>
+      <option value="de">DE</option>
+      <option value="en">EN</option>
+      <option value="nl">NL</option>
+      <option value="fr">FR</option>
+      <option value="se">SE</option>
+      <option value="svk">SVK</option>
+      <option value="svn">SVN</option>
+      <option value="cs">CS</option>
+      <option value="es">ES</option>
+      <option value="it">IT</option>
+      <option value="pl">PL</option>
+      <option value="ru">RU</option>
     </select>
 
-    <img class="logo" @click="response = []; wrongQuery = false;" src="../assets/conrad_logo_regular.svg">
+    <img class="logo" @click="response = []; wrongQuery = false; input.searchQuery=''" src="../assets/conrad_logo_regular.svg">
 
     <div class="searchContainer">
 
       <select  class="languageFilter" v-model="input.languageFilter">
-        <option value="">Sprache</option>
-        <option value="de">Deutsch</option>
-        <option value="en">Englisch</option>
-        <option value="cs">Tschechisch</option>
-        <option value="es">Spanisch</option>
-        <option value="fr">Französisch</option>
-        <option value="hu">Ungarisch</option>
-        <option value="it">Italienisch</option>
-        <option value="nl">Niederländisch</option>
-        <option value="pl">Polnisch</option>
-        <option value="ru">Russisch</option>
-        <option value="sk">Slowenisch</option>
-        <option value="sv">Schwedisch</option>
+        <option value="">{{ $t("language") }}</option>
+        <option value="de">German</option>
+        <option value="en">English</option>
+        <option value="cs">Czech</option>
+        <option value="es">Spanish</option>
+        <option value="fr">French</option>
+        <option value="hu">Hungarian</option>
+        <option value="it">Italian</option>
+        <option value="nl">Dutch</option>
+        <option value="pl">Polish</option>
+        <option value="ru">Russian</option>
+        <option value="sk">Slovak</option>
+        <option value="sv">Slovenien</option>
       </select>
 
-      <input type="text" class="searchBar" v-model="input.searchQuery" @keyup.enter="sendData()" placeholder="Suchbegriff eingeben" />
-      <button class="searchBarButton" v-on:click="sendData()">Suchen</button>
+      <input type="text" class="searchBar" v-model="input.searchQuery" @keyup.enter="sendData()" :placeholder='$t("searchPlaceholder")' />
+      <button class="searchBarButton" v-on:click="sendData()">{{ $t("search") }}</button>
 
     </div>
 
     <div v-if="wrongQuery">
-      Sorry, your search returned no results
+      {{ $t("wrongQuery") }}
     </div>
 
     <div v-if="response.length == 0 && !wrongQuery">
@@ -55,18 +55,18 @@
       <img class="icon" src="../assets/icons/sp.svg">
       <img class="icon" src="../assets/icons/up.svg">
       <div class="infoText">
-        <span>Im Conrad-Downloadcenter können Sie verschiedene interessante Informationen rund um die Conrad-Produktfamilie herunterladen.</span><br><br>
-        <span>Es stehen bereits über 980.000 Dokumente für Sie zur Verfügung.</span>
+        <span>{{ $t("infoText1") }}</span><br><br>
+        <span>{{ $t("infoText2") }}</span>
         <span>
-          <br><br> Darunter finden Sie : <br><br>
-          Datenblätter <br>
-          Schaltpläne <br>
-          Informationen <br>
-          Anleitungen <br>
-          Sicherheitsdatenblätter <br>
-          Zertifikate <br>
-          Ersatzteillisten <br>
-          Software <br>
+          <br><br>{{ $t("infoText3") }}<br><br>
+          {{ $t("document1") }} <br>
+          {{ $t("document2") }} <br>
+          {{ $t("document3") }} <br>
+          {{ $t("document4") }} <br>
+          {{ $t("document5") }} <br>
+          {{ $t("document6") }} <br>
+          {{ $t("document7") }} <br>
+          {{ $t("document8") }} <br>
 
         </span>
       </div>
@@ -76,10 +76,10 @@
       <table id="resultTable" class="resultTable">
         <tr>
           <th class="firstRow">Artnr</th>
-          <th>Dateibezeichnung</th>
-          <th>Sprachen</th>
-          <th>Typ</th>
-          <th>Größe</th>
+          <th>{{ $t("resultDescription") }}</th>
+          <th>{{ $t("resultLanguage") }}</th>
+          <th>{{ $t("resultTyp") }}</th>
+          <th>{{ $t("resultSize") }}</th>
         </tr>
         <tbody v-for="position in response" >
           <SearchPosition
@@ -89,7 +89,7 @@
     </div>
 
     <div class="footer">
-      <a href="https://www.conrad.de" target="_blank">Zum Conrad Webshop</a>
+      <a href="https://www.conrad.de" target="_blank">{{ $t("footerWebshop") }}</a>
     </div>
 
   </div>
@@ -167,8 +167,11 @@
         localStorage.setItem("i18n",lang)
         this.$i18n.locale = lang
 
-      }
-    }
+      },
+    },
+    mounted() {
+      this.selectLanguage = localStorage.getItem("i18n")
+    },
   }
 </script>
 

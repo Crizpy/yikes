@@ -26,7 +26,43 @@
       getLanguageIcon() {
         switch (this.searchPositionObject.language) {
           case "en" :
-            return images("./gb.png")
+            return images("./gb.png");
+            break;
+          case "de" :
+            return images("./de.png");
+            break;
+          case "cs" :
+            return images("./cz.png");
+            break;
+          case "es" :
+            return images("./es.png");
+            break;
+          case "fr" :
+            return images("./fr.png");
+            break;
+          case "hu" :
+            return images("./hu.png");
+            break;
+          case "it" :
+            return images("./it.png");
+            break;
+          case "nl" :
+            return images("./nl.png");
+            break;
+          case "pl" :
+            return images("./pl.png");
+            break;
+          case "ru" :
+            return images("./ru.png");
+            break;
+          case "sk" :
+            return images("./sk.png");
+            break;
+          case "sv" :
+            return images("./sv.png");
+            break;
+          default:
+            break;
         }
       },
       openSite(link) {
